@@ -53,6 +53,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sourceNodes = exports.pluginOptionsSchema = void 0;
 var garmin_connect_1 = require("garmin-connect");
 var getActivities_1 = require("./garmin/getActivities");
+var getHeartRate_1 = require("./garmin/getHeartRate");
+var getSleepData_1 = require("./garmin/getSleepData");
 var getSteps_1 = require("./garmin/getSteps");
 var Endpoints_1 = __importDefault(require("./utils/Endpoints"));
 var GarminPluginOptions_1 = require("./utils/GarminPluginOptions");
@@ -71,7 +73,7 @@ exports.pluginOptionsSchema = pluginOptionsSchema;
 var sourceNodes = function (_a, pluginOptions) {
     var actions = _a.actions, createNodeId = _a.createNodeId, createContentDigest = _a.createContentDigest, reporter = _a.reporter, cache = _a.cache;
     return __awaiter(void 0, void 0, void 0, function () {
-        var GCClient, activities, steps, e_1;
+        var GCClient, activities, steps, hrs, sleepData, e_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -79,7 +81,7 @@ var sourceNodes = function (_a, pluginOptions) {
                     pluginOptions = __assign(__assign({}, GarminPluginOptions_1.defaultGarminPluginOptions), pluginOptions);
                     _b.label = 1;
                 case 1:
-                    _b.trys.push([1, 7, , 8]);
+                    _b.trys.push([1, 11, , 12]);
                     return [4 /*yield*/, GCClient.login(pluginOptions.email, pluginOptions.password)];
                 case 2:
                     _b.sent();
@@ -122,7 +124,7 @@ var sourceNodes = function (_a, pluginOptions) {
                         steps.forEach(function (step) {
                             actions.createNode({
                                 data: step,
-                                id: createNodeId("GarminSteps" + step.date),
+                                id: createNodeId(getSteps_1.formatStepId(step.date)),
                                 internal: {
                                     type: "GarminSteps",
                                     contentDigest: createContentDigest(step),
@@ -134,8 +136,60 @@ var sourceNodes = function (_a, pluginOptions) {
                         reporter.success("source-garmin: " + steps.length + " days of steps fetched");
                     }
                     _b.label = 6;
-                case 6: return [3 /*break*/, 8];
+                case 6:
+                    if (!(pluginOptions.endpoints.indexOf("HeartRate") !== -1)) return [3 /*break*/, 8];
+                    return [4 /*yield*/, getHeartRate_1.getHeartRate({
+                            cache: cache,
+                            pluginOptions: pluginOptions,
+                            reporter: reporter,
+                            GCClient: GCClient,
+                        })];
                 case 7:
+                    hrs = _b.sent();
+                    if (hrs && hrs.length > 0) {
+                        hrs.forEach(function (hr) {
+                            actions.createNode({
+                                data: hr,
+                                id: createNodeId(getHeartRate_1.formatHrId(hr.date)),
+                                internal: {
+                                    type: "GarminHeartRates",
+                                    contentDigest: createContentDigest(hr),
+                                },
+                            }, {
+                                name: "gatsby-source-garmin",
+                            });
+                        });
+                        reporter.success("source-garmin: " + hrs.length + " days of heart rates fetched");
+                    }
+                    _b.label = 8;
+                case 8:
+                    if (!(pluginOptions.endpoints.indexOf("SleepData") !== -1)) return [3 /*break*/, 10];
+                    return [4 /*yield*/, getSleepData_1.getSleepData({
+                            cache: cache,
+                            pluginOptions: pluginOptions,
+                            reporter: reporter,
+                            GCClient: GCClient,
+                        })];
+                case 9:
+                    sleepData = _b.sent();
+                    if (sleepData && sleepData.length > 0) {
+                        sleepData.forEach(function (sleep) {
+                            actions.createNode({
+                                data: sleep,
+                                id: createNodeId(getSleepData_1.formatSleepId(sleep.date)),
+                                internal: {
+                                    type: "GarminSleepData",
+                                    contentDigest: createContentDigest(sleep),
+                                },
+                            }, {
+                                name: "gatsby-source-garmin",
+                            });
+                        });
+                        reporter.success("source-garmin: " + sleepData.length + " days of heart rates fetched");
+                    }
+                    _b.label = 10;
+                case 10: return [3 /*break*/, 12];
+                case 11:
                     e_1 = _b.sent();
                     if (pluginOptions.debug) {
                         reporter.panic("source-garmin: ", e_1);
@@ -143,8 +197,8 @@ var sourceNodes = function (_a, pluginOptions) {
                     else {
                         reporter.panic("source-garmin: " + e_1.message);
                     }
-                    return [3 /*break*/, 8];
-                case 8: return [2 /*return*/];
+                    return [3 /*break*/, 12];
+                case 12: return [2 /*return*/];
             }
         });
     });

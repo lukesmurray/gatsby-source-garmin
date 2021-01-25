@@ -7,7 +7,7 @@ export default interface GarminPluginOptions {
     debug?: boolean;
 }
 export declare const defaultGarminPluginOptions: {
-    endpoints: ("Activities" | "Steps" | "HeartRate" | "Sleep" | "SleepData")[];
+    endpoints: ("Activities" | "Steps" | "HeartRate" | "SleepData")[];
     debug: boolean;
 };
 //# sourceMappingURL=GarminPluginOptions.d.ts.map

@@ -50,42 +50,42 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatStepId = exports.getSteps = void 0;
+exports.formatHrId = exports.getHeartRate = void 0;
 var addDays_1 = __importDefault(require("date-fns/addDays"));
 var compareAsc_1 = __importDefault(require("date-fns/compareAsc"));
 var format_1 = __importDefault(require("date-fns/format"));
-var getSteps = function (_a) {
+var getHeartRate = function (_a) {
     var cache = _a.cache, pluginOptions = _a.pluginOptions, reporter = _a.reporter, GCClient = _a.GCClient;
     return __awaiter(void 0, void 0, void 0, function () {
-        var steps_1, cachedStepIds, startDate, lastFetch, lastFetchDate, end, current, loadedSteps, storedSteps, e_1;
+        var heartRate_1, cacheHrIds, startDate, lastFetch, lastFetchDate, end, current, loadedHeartRate, storedSteps, e_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 9, , 10]);
-                    steps_1 = [];
-                    return [4 /*yield*/, cache.get("GarminSteps")];
+                    heartRate_1 = [];
+                    return [4 /*yield*/, cache.get("GarminHrs")];
                 case 1:
-                    cachedStepIds = (_b.sent()) || [];
-                    if (cachedStepIds.length > 0) {
-                        cachedStepIds.forEach(function (stepId) { return __awaiter(void 0, void 0, void 0, function () {
-                            var cachedSteps;
+                    cacheHrIds = (_b.sent()) || [];
+                    if (cacheHrIds.length > 0) {
+                        cacheHrIds.forEach(function (hrId) { return __awaiter(void 0, void 0, void 0, function () {
+                            var cachedHr;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
-                                    case 0: return [4 /*yield*/, cache.get(stepId)];
+                                    case 0: return [4 /*yield*/, cache.get(hrId)];
                                     case 1:
-                                        cachedSteps = _a.sent();
-                                        cachedSteps.date = new Date(cachedSteps.date);
-                                        steps_1.push(cachedSteps);
+                                        cachedHr = _a.sent();
+                                        cachedHr.date = new Date(cachedHr.date);
+                                        heartRate_1.push(cachedHr);
                                         return [2 /*return*/];
                                 }
                             });
                         }); });
                         if (pluginOptions.debug) {
-                            reporter.info("source-garmin: " + cachedStepIds.length + " steps restored from cache");
+                            reporter.info("source-garmin: " + cacheHrIds.length + " heart rates restored from cache");
                         }
                     }
                     startDate = new Date(pluginOptions.startDate);
-                    return [4 /*yield*/, cache.get("GarminStepsLastFetch")];
+                    return [4 /*yield*/, cache.get("GarminHrsLastFetch")];
                 case 2:
                     lastFetch = _b.sent();
                     if (lastFetch !== undefined) {
@@ -96,36 +96,37 @@ var getSteps = function (_a) {
                         }
                     }
                     if (pluginOptions.debug) {
-                        reporter.info("source-garmin: Fetching steps since " + startDate.toLocaleString());
+                        reporter.info("source-garmin: Fetching heart rates since " +
+                            startDate.toLocaleString());
                     }
                     end = addDays_1.default(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), -1);
                     current = new Date(end.getTime());
                     _b.label = 3;
                 case 3:
                     if (!(compareAsc_1.default(startDate, current) !== 1)) return [3 /*break*/, 6];
-                    return [4 /*yield*/, GCClient.getSteps(current)];
+                    return [4 /*yield*/, GCClient.getHeartRate(current)];
                 case 4:
-                    loadedSteps = _b.sent();
+                    loadedHeartRate = _b.sent();
                     if (pluginOptions.debug) {
-                        reporter.info("source-garmin: Loaded steps for " + formatStepsDate(current));
+                        reporter.info("source-garmin: Loaded heart rates for " + formatHrDate(current));
                     }
                     storedSteps = {
                         date: current,
-                        data: loadedSteps,
+                        data: loadedHeartRate,
                     };
-                    return [4 /*yield*/, cache.set(formatStepId(current), __assign(__assign({}, storedSteps), { date: storedSteps.date.getTime() }))];
+                    return [4 /*yield*/, cache.set(formatHrId(current), __assign(__assign({}, storedSteps), { date: storedSteps.date.getTime() }))];
                 case 5:
                     _b.sent();
-                    steps_1.push(storedSteps);
+                    heartRate_1.push(storedSteps);
                     current = addDays_1.default(current, -1);
                     return [3 /*break*/, 3];
-                case 6: return [4 /*yield*/, cache.set("GarminSteps", steps_1.map(function (step) { return formatStepId(step.date); }))];
+                case 6: return [4 /*yield*/, cache.set("GarminHrs", heartRate_1.map(function (step) { return formatHrId(step.date); }))];
                 case 7:
                     _b.sent();
-                    return [4 /*yield*/, cache.set("GarminStepsLastFetch", Date.now())];
+                    return [4 /*yield*/, cache.set("GarminHrsLastFetch", Date.now())];
                 case 8:
                     _b.sent();
-                    return [2 /*return*/, steps_1];
+                    return [2 /*return*/, heartRate_1];
                 case 9:
                     e_1 = _b.sent();
                     if (pluginOptions.debug) {
@@ -140,12 +141,12 @@ var getSteps = function (_a) {
         });
     });
 };
-exports.getSteps = getSteps;
-function formatStepId(date) {
-    return "GarminSteps" + formatStepsDate(date);
+exports.getHeartRate = getHeartRate;
+function formatHrId(date) {
+    return "GarminHeartRates" + formatHrDate(date);
 }
-exports.formatStepId = formatStepId;
-function formatStepsDate(date) {
+exports.formatHrId = formatHrId;
+function formatHrDate(date) {
     return format_1.default(date, "yyyy-MM-dd");
 }
-//# sourceMappingURL=getSteps.js.map
+//# sourceMappingURL=getHeartRate.js.map

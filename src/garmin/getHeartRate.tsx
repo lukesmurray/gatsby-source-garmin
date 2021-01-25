@@ -5,7 +5,7 @@ import { GarminConnect } from "garmin-connect";
 import { GatsbyCache, PluginOptions, Reporter } from "gatsby";
 import GarminPluginOptions from "../utils/GarminPluginOptions";
 
-export const getSteps = async ({
+export const getHeartRate = async ({
   cache,
   pluginOptions,
   reporter,
@@ -17,26 +17,26 @@ export const getSteps = async ({
   GCClient: GarminConnect;
 }): Promise<any[]> => {
   try {
-    const steps = [];
+    const heartRate = [];
 
-    let cachedStepIds = (await cache.get("GarminSteps")) || [];
-    if (cachedStepIds.length > 0) {
-      cachedStepIds.forEach(async (stepId: string) => {
-        const cachedSteps = await cache.get(stepId);
-        cachedSteps.date = new Date(cachedSteps.date);
-        steps.push(cachedSteps);
+    let cacheHrIds = (await cache.get("GarminHrs")) || [];
+    if (cacheHrIds.length > 0) {
+      cacheHrIds.forEach(async (hrId: string) => {
+        const cachedHr = await cache.get(hrId);
+        cachedHr.date = new Date(cachedHr.date);
+        heartRate.push(cachedHr);
       });
 
       if (pluginOptions.debug!) {
         reporter.info(
-          `source-garmin: ${cachedStepIds.length} steps restored from cache`
+          `source-garmin: ${cacheHrIds.length} heart rates restored from cache`
         );
       }
     }
 
     // set start date based on last fetch date
     let startDate = new Date(pluginOptions.startDate);
-    const lastFetch = await cache.get("GarminStepsLastFetch");
+    const lastFetch = await cache.get("GarminHrsLastFetch");
     if (lastFetch !== undefined) {
       let lastFetchDate = new Date(lastFetch);
       // start date before last fetch date
@@ -47,7 +47,8 @@ export const getSteps = async ({
 
     if (pluginOptions.debug) {
       reporter.info(
-        "source-garmin: Fetching steps since " + startDate.toLocaleString()
+        "source-garmin: Fetching heart rates since " +
+          startDate.toLocaleString()
       );
     }
 
@@ -66,36 +67,36 @@ export const getSteps = async ({
 
     // while current is greater than or equal to start date
     while (compareAsc(startDate, current) !== 1) {
-      let loadedSteps = await GCClient.getSteps(current);
+      let loadedHeartRate = await GCClient.getHeartRate(current);
 
       if (pluginOptions.debug) {
         reporter.info(
-          "source-garmin: Loaded steps for " + formatStepsDate(current)
+          "source-garmin: Loaded heart rates for " + formatHrDate(current)
         );
       }
 
       let storedSteps = {
         date: current,
-        data: loadedSteps,
+        data: loadedHeartRate,
       };
 
-      await cache.set(formatStepId(current), {
+      await cache.set(formatHrId(current), {
         ...storedSteps,
         date: storedSteps.date.getTime(),
       });
 
-      steps.push(storedSteps);
+      heartRate.push(storedSteps);
 
       current = addDays(current, -1);
     }
 
     await cache.set(
-      `GarminSteps`,
-      steps.map((step) => formatStepId(step.date))
+      `GarminHrs`,
+      heartRate.map((step) => formatHrId(step.date))
     );
 
-    await cache.set("GarminStepsLastFetch", Date.now());
-    return steps;
+    await cache.set("GarminHrsLastFetch", Date.now());
+    return heartRate;
   } catch (e) {
     if (pluginOptions.debug) {
       reporter.panic(`source-garmin: `, e);
@@ -106,10 +107,10 @@ export const getSteps = async ({
   }
 };
 
-export function formatStepId(date: Date): string {
-  return `GarminSteps${formatStepsDate(date)}`;
+export function formatHrId(date: Date): string {
+  return `GarminHeartRates${formatHrDate(date)}`;
 }
 
-function formatStepsDate(date: Date) {
+function formatHrDate(date: Date) {
   return format(date, "yyyy-MM-dd");
 }

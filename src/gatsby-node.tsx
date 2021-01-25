@@ -1,7 +1,9 @@
 import { GarminConnect } from "garmin-connect";
 import { GatsbyNode, PluginOptions, SourceNodesArgs } from "gatsby";
 import { getActivities } from "./garmin/getActivities";
-import { getSteps } from "./garmin/getSteps";
+import { formatHrId, getHeartRate } from "./garmin/getHeartRate";
+import { formatSleepId, getSleepData } from "./garmin/getSleepData";
+import { formatStepId, getSteps } from "./garmin/getSteps";
 import Endpoints from "./utils/Endpoints";
 import GarminPluginOptions, {
   defaultGarminPluginOptions,
@@ -80,7 +82,7 @@ export const sourceNodes: GatsbyNode["sourceNodes"] = async (
           actions.createNode(
             {
               data: step,
-              id: createNodeId(`GarminSteps${step.date}`),
+              id: createNodeId(formatStepId(step.date)),
               internal: {
                 type: "GarminSteps",
                 contentDigest: createContentDigest(step),
@@ -94,6 +96,68 @@ export const sourceNodes: GatsbyNode["sourceNodes"] = async (
 
         reporter.success(
           `source-garmin: ${steps.length} days of steps fetched`
+        );
+      }
+    }
+
+    if (pluginOptions.endpoints!.indexOf("HeartRate") !== -1) {
+      const hrs = await getHeartRate({
+        cache,
+        pluginOptions,
+        reporter,
+        GCClient,
+      });
+
+      if (hrs && hrs.length > 0) {
+        hrs.forEach((hr) => {
+          actions.createNode(
+            {
+              data: hr,
+              id: createNodeId(formatHrId(hr.date)),
+              internal: {
+                type: "GarminHeartRates",
+                contentDigest: createContentDigest(hr),
+              },
+            },
+            {
+              name: "gatsby-source-garmin",
+            }
+          );
+        });
+
+        reporter.success(
+          `source-garmin: ${hrs.length} days of heart rates fetched`
+        );
+      }
+    }
+
+    if (pluginOptions.endpoints!.indexOf("SleepData") !== -1) {
+      const sleepData = await getSleepData({
+        cache,
+        pluginOptions,
+        reporter,
+        GCClient,
+      });
+
+      if (sleepData && sleepData.length > 0) {
+        sleepData.forEach((sleep) => {
+          actions.createNode(
+            {
+              data: sleep,
+              id: createNodeId(formatSleepId(sleep.date)),
+              internal: {
+                type: "GarminSleepData",
+                contentDigest: createContentDigest(sleep),
+              },
+            },
+            {
+              name: "gatsby-source-garmin",
+            }
+          );
+        });
+
+        reporter.success(
+          `source-garmin: ${sleepData.length} days of heart rates fetched`
         );
       }
     }
