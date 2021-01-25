@@ -95,7 +95,7 @@ var sourceNodes = function (_a, pluginOptions) {
                         activities.forEach(function (activity) {
                             actions.createNode({
                                 activity: activity,
-                                id: createNodeId("GarminActivity" + activity.id),
+                                id: createNodeId("GarminActivity" + activity.activityId),
                                 internal: {
                                     type: "GarminActivity",
                                     contentDigest: createContentDigest(activity),

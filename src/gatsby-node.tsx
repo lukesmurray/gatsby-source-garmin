@@ -48,7 +48,7 @@ export const sourceNodes: GatsbyNode["sourceNodes"] = async (
           actions.createNode(
             {
               activity,
-              id: createNodeId(`GarminActivity${activity.id}`),
+              id: createNodeId(`GarminActivity${activity.activityId}`),
               internal: {
                 type: "GarminActivity",
                 contentDigest: createContentDigest(activity),

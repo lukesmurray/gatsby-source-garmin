@@ -26,7 +26,7 @@ export const getActivities = async ({
       });
 
       if (pluginOptions.debug!) {
-        reporter.success(
+        reporter.info(
           `source-garmin: ${cachedActivitiesIds.length} activities restored from cache`
         );
       }
@@ -55,9 +55,9 @@ export const getActivities = async ({
     while (true) {
       let loadedActivities = await GCClient.getActivities(start, limit);
 
-      let validActivities = loadedActivities.filter((a: any) => {
-        compareAsc(startDate, new Date(a.beginTimestamp)) !== 1;
-      });
+      let validActivities = loadedActivities.filter(
+        (a: any) => compareAsc(startDate, new Date(a.beginTimestamp)) !== 1
+      );
 
       if (validActivities.length === 0) {
         // past the start date or no remaining activities
@@ -66,11 +66,11 @@ export const getActivities = async ({
 
       // add all the activities to the cache
       validActivities.forEach(
-        async (a: any) => await cache.set(`GarminActivity${a.id}`, a)
+        async (a: any) => await cache.set(`GarminActivity${a.activityId}`, a)
       );
 
       if (pluginOptions.debug) {
-        reporter.success(
+        reporter.info(
           `source-garmin: ${validActivities.length} activities loaded from garmin`
         );
       }
@@ -84,7 +84,7 @@ export const getActivities = async ({
 
     await cache.set(
       `GarminActivities`,
-      activities.map((a) => a.id)
+      activities.map((a) => a.activityId)
     );
 
     await cache.set("GarminActivitiesLastFetch", Date.now());

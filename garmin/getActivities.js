@@ -68,7 +68,7 @@ var getActivities = function (_a) {
                             });
                         }); });
                         if (pluginOptions.debug) {
-                            reporter.success("source-garmin: " + cachedActivitiesIds.length + " activities restored from cache");
+                            reporter.info("source-garmin: " + cachedActivitiesIds.length + " activities restored from cache");
                         }
                     }
                     startDate_1 = new Date(pluginOptions.startDate);
@@ -93,9 +93,7 @@ var getActivities = function (_a) {
                     return [4 /*yield*/, GCClient.getActivities(start, limit)];
                 case 4:
                     loadedActivities = _b.sent();
-                    validActivities = loadedActivities.filter(function (a) {
-                        compareAsc_1.default(startDate_1, new Date(a.beginTimestamp)) !== 1;
-                    });
+                    validActivities = loadedActivities.filter(function (a) { return compareAsc_1.default(startDate_1, new Date(a.beginTimestamp)) !== 1; });
                     if (validActivities.length === 0) {
                         // past the start date or no remaining activities
                         return [3 /*break*/, 6];
@@ -103,12 +101,12 @@ var getActivities = function (_a) {
                     // add all the activities to the cache
                     validActivities.forEach(function (a) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, cache.set("GarminActivity" + a.id, a)];
+                            case 0: return [4 /*yield*/, cache.set("GarminActivity" + a.activityId, a)];
                             case 1: return [2 /*return*/, _a.sent()];
                         }
                     }); }); });
                     if (pluginOptions.debug) {
-                        reporter.success("source-garmin: " + validActivities.length + " activities loaded from garmin");
+                        reporter.info("source-garmin: " + validActivities.length + " activities loaded from garmin");
                     }
                     activities_1.push.apply(activities_1, validActivities);
                     start += limit;
@@ -116,7 +114,7 @@ var getActivities = function (_a) {
                 case 5:
                     _b.sent();
                     return [3 /*break*/, 3];
-                case 6: return [4 /*yield*/, cache.set("GarminActivities", activities_1.map(function (a) { return a.id; }))];
+                case 6: return [4 /*yield*/, cache.set("GarminActivities", activities_1.map(function (a) { return a.activityId; }))];
                 case 7:
                     _b.sent();
                     return [4 /*yield*/, cache.set("GarminActivitiesLastFetch", Date.now())];

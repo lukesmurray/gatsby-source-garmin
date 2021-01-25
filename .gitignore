@@ -4,5 +4,5 @@ node_modules
 # ignore garmin responses (for testing)
 responses
 
-# ignore garmin config (for testing)
-garmin.config.json
+# dotenv environment variable files
+.env*
