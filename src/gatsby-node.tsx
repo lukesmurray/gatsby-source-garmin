@@ -1,6 +1,7 @@
 import { GarminConnect } from "garmin-connect";
 import { GatsbyNode, PluginOptions, SourceNodesArgs } from "gatsby";
 import { getActivities } from "./garmin/getActivities";
+import { getSteps } from "./garmin/getSteps";
 import Endpoints from "./utils/Endpoints";
 import GarminPluginOptions, {
   defaultGarminPluginOptions,
@@ -47,7 +48,7 @@ export const sourceNodes: GatsbyNode["sourceNodes"] = async (
         activities.forEach((activity) => {
           actions.createNode(
             {
-              activity,
+              data: activity,
               id: createNodeId(`GarminActivity${activity.activityId}`),
               internal: {
                 type: "GarminActivity",
@@ -62,6 +63,37 @@ export const sourceNodes: GatsbyNode["sourceNodes"] = async (
 
         reporter.success(
           `source-garmin: ${activities.length} activities fetched`
+        );
+      }
+    }
+
+    if (pluginOptions.endpoints!.indexOf("Steps") !== -1) {
+      const steps = await getSteps({
+        cache,
+        pluginOptions,
+        reporter,
+        GCClient,
+      });
+
+      if (steps && steps.length > 0) {
+        steps.forEach((step) => {
+          actions.createNode(
+            {
+              data: step,
+              id: createNodeId(`GarminSteps${step.date}`),
+              internal: {
+                type: "GarminSteps",
+                contentDigest: createContentDigest(step),
+              },
+            },
+            {
+              name: "gatsby-source-garmin",
+            }
+          );
+        });
+
+        reporter.success(
+          `source-garmin: ${steps.length} days of steps fetched`
         );
       }
     }

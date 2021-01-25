@@ -22,7 +22,7 @@ module.exports = {
       options: {
         email: process.env.GARMIN_EMAIL,
         password: process.env.GARMIN_PASS,
-        startDate: new Date(2020, 0, 1).getTime(), // month is 0 indexed so 0 is january
+        startDate: new Date(2021, 0, 1).getTime(), // month is 0 indexed so 0 is january
         debug: true,
       },
     },

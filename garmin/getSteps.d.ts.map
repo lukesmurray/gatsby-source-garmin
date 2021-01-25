@@ -1,0 +1,1 @@
+{"version":3,"file":"getSteps.d.ts","sourceRoot":"","sources":["../src/garmin/getSteps.tsx"],"names":[],"mappings":"AAGA,OAAO,EAAE,aAAa,EAAE,MAAM,gBAAgB,CAAC;AAC/C,OAAO,EAAE,WAAW,EAAE,aAAa,EAAE,QAAQ,EAAE,MAAM,QAAQ,CAAC;AAC9D,OAAO,mBAAmB,MAAM,8BAA8B,CAAC;AAE/D,eAAO,MAAM,QAAQ;WAMZ,WAAW;mBACH,aAAa,GAAG,mBAAmB;cACxC,QAAQ;cACR,aAAa;MACrB,QAAQ,GAAG,EAAE,CAoFhB,CAAC"}
