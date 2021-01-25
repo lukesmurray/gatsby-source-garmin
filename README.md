@@ -82,3 +82,8 @@ query ExampleQuery {
 The source code is in the `src` folder.
 An example of the plugin is in the `example` folder and can be run with `gatsby develop` from within the example folder.
 After changing the source code transpile the js with `yarn build`.
+
+## Releasing
+
+1. Run `npm release` and hit `ctrl+c` to get out of the husky hook
+2. Run `npm publish`
