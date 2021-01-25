@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -39,103 +50,77 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPages = exports.createSchemaCustomization = void 0;
-var promises_1 = __importDefault(require("fs/promises"));
+exports.sourceNodes = exports.pluginOptionsSchema = void 0;
 var garmin_connect_1 = require("garmin-connect");
-var createSchemaCustomization = function () {
-    return Promise.resolve();
-};
-exports.createSchemaCustomization = createSchemaCustomization;
-var createPages = function () { return __awaiter(void 0, void 0, void 0, function () {
-    function writeJson(name, data) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, promises_1.default.writeFile("responses/" + name + ".json", JSON.stringify(data, null, 2))];
-                    case 1:
-                        _a.sent();
-                        return [2 /*return*/];
-                }
-            });
-        });
-    }
-    var GCClient, userInfo, socialProfile, socialConnections, deviceInfo, activities, activity, newsFeed, steps, hr, sleep, sleepData;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                GCClient = new garmin_connect_1.GarminConnect();
-                return [4 /*yield*/, GCClient.login()];
-            case 1:
-                _a.sent();
-                return [4 /*yield*/, GCClient.getUserInfo()];
-            case 2:
-                userInfo = _a.sent();
-                return [4 /*yield*/, writeJson("userInfo", userInfo)];
-            case 3:
-                _a.sent();
-                return [4 /*yield*/, GCClient.getSocialProfile()];
-            case 4:
-                socialProfile = _a.sent();
-                return [4 /*yield*/, writeJson("socialProfile", socialProfile)];
-            case 5:
-                _a.sent();
-                return [4 /*yield*/, GCClient.getSocialConnections()];
-            case 6:
-                socialConnections = _a.sent();
-                return [4 /*yield*/, writeJson("socialConnections", socialConnections)];
-            case 7:
-                _a.sent();
-                return [4 /*yield*/, GCClient.getDeviceInfo()];
-            case 8:
-                deviceInfo = _a.sent();
-                return [4 /*yield*/, writeJson("deviceInfo", deviceInfo)];
-            case 9:
-                _a.sent();
-                return [4 /*yield*/, GCClient.getActivities(0, 10)];
-            case 10:
-                activities = _a.sent();
-                return [4 /*yield*/, writeJson("activities", activities)];
-            case 11:
-                _a.sent();
-                return [4 /*yield*/, GCClient.getActivity(activities[0])];
-            case 12:
-                activity = _a.sent();
-                return [4 /*yield*/, writeJson("activity", activity)];
-            case 13:
-                _a.sent();
-                return [4 /*yield*/, GCClient.getNewsFeed(0, 10)];
-            case 14:
-                newsFeed = _a.sent();
-                return [4 /*yield*/, writeJson("newsFeed", newsFeed)];
-            case 15:
-                _a.sent();
-                return [4 /*yield*/, GCClient.getSteps()];
-            case 16:
-                steps = _a.sent();
-                return [4 /*yield*/, writeJson("steps", steps)];
-            case 17:
-                _a.sent();
-                return [4 /*yield*/, GCClient.getHeartRate()];
-            case 18:
-                hr = _a.sent();
-                return [4 /*yield*/, writeJson("heartRate", hr)];
-            case 19:
-                _a.sent();
-                return [4 /*yield*/, GCClient.getSleep()];
-            case 20:
-                sleep = _a.sent();
-                return [4 /*yield*/, writeJson("sleep", sleep)];
-            case 21:
-                _a.sent();
-                return [4 /*yield*/, GCClient.getSleepData()];
-            case 22:
-                sleepData = _a.sent();
-                return [4 /*yield*/, writeJson("sleepData", sleepData)];
-            case 23:
-                _a.sent();
-                return [2 /*return*/];
-        }
+var getActivities_1 = require("./garmin/getActivities");
+var Endpoints_1 = __importDefault(require("./utils/Endpoints"));
+var GarminPluginOptions_1 = require("./utils/GarminPluginOptions");
+var pluginOptionsSchema = function (_a) {
+    var _b;
+    var Joi = _a.Joi;
+    return Joi.object({
+        email: Joi.string().required(),
+        password: Joi.string().required(),
+        startDate: Joi.number().required(),
+        endpoints: Joi.array().items((_b = Joi.string()).valid.apply(_b, Endpoints_1.default.values)),
+        debug: Joi.boolean(),
     });
-}); };
-exports.createPages = createPages;
+};
+exports.pluginOptionsSchema = pluginOptionsSchema;
+var sourceNodes = function (_a, pluginOptions) {
+    var actions = _a.actions, createNodeId = _a.createNodeId, createContentDigest = _a.createContentDigest, reporter = _a.reporter, cache = _a.cache;
+    return __awaiter(void 0, void 0, void 0, function () {
+        var GCClient, activities, e_1;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    GCClient = new garmin_connect_1.GarminConnect();
+                    pluginOptions = __assign(__assign({}, GarminPluginOptions_1.defaultGarminPluginOptions), pluginOptions);
+                    _b.label = 1;
+                case 1:
+                    _b.trys.push([1, 5, , 6]);
+                    return [4 /*yield*/, GCClient.login(pluginOptions.email, pluginOptions.password)];
+                case 2:
+                    _b.sent();
+                    if (!(pluginOptions.endpoints.indexOf("Activities") !== -1)) return [3 /*break*/, 4];
+                    return [4 /*yield*/, getActivities_1.getActivities({
+                            cache: cache,
+                            pluginOptions: pluginOptions,
+                            reporter: reporter,
+                            GCClient: GCClient,
+                        })];
+                case 3:
+                    activities = _b.sent();
+                    if (activities && activities.length > 0) {
+                        activities.forEach(function (activity) {
+                            actions.createNode({
+                                activity: activity,
+                                id: createNodeId("GarminActivity" + activity.id),
+                                internal: {
+                                    type: "GarminActivity",
+                                    contentDigest: createContentDigest(activity),
+                                },
+                            }, {
+                                name: "gatsby-source-garmin",
+                            });
+                        });
+                        reporter.success("source-garmin: " + activities.length + " activities fetched");
+                    }
+                    _b.label = 4;
+                case 4: return [3 /*break*/, 6];
+                case 5:
+                    e_1 = _b.sent();
+                    if (pluginOptions.debug) {
+                        reporter.panic("source-garmin: ", e_1);
+                    }
+                    else {
+                        reporter.panic("source-garmin: " + e_1.message);
+                    }
+                    return [3 /*break*/, 6];
+                case 6: return [2 /*return*/];
+            }
+        });
+    });
+};
+exports.sourceNodes = sourceNodes;
 //# sourceMappingURL=gatsby-node.js.map

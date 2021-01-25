@@ -26,8 +26,9 @@ module.exports = {
     {
       resolve: "gatsby-source-garmin",
       options: {
-        garminEmail: process.env.GARMIN_EMAIL,
-        garminPass: process.env.GARMIN_PASS,
+        email: process.env.GARMIN_EMAIL,
+        pass: process.env.GARMIN_PASS,
+        startDate: new Date(2020, 0, 1).getTime(), // month is 0 indexed so 0 is january
       },
     },
   ],
@@ -36,10 +37,13 @@ module.exports = {
 
 ## Options
 
-| Key         | Required | Default | Description                                  |
-| :---------- | :------: | :------ | :------------------------------------------- |
-| garminEmail |   true   |         | The email address you use to login to Garmin |
-| garminPass  |   true   |         | The password you use to login to Garmin.     |
+| Key       | Required | Default                                                        | Type     | Description                                                                                                                                                                                 |
+| :-------- | :------: | :------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| email     |   true   |                                                                | string   | The email address you use to login to Garmin                                                                                                                                                |
+| password  |   true   |                                                                | string   | The password you use to login to Garmin.                                                                                                                                                    |
+| startDate |   true   |                                                                | number   | The start date for retrieving garmin data. Data from before this date is not sourced.                                                                                                       |
+| endpoints |  false   | `[ "Activities", "Steps", "HeartRate", "Sleep", "SleepData" ]` | string[] | The garmin endpoints to hit. See [Garmin Connect](https://github.com/Pythe1337N/garmin-connect) for more information about each endpoint. Defaults to all endpoints exposed by this plugin. |
+| debug     |  false   | false                                                          | boolean  | Whether to emit more verbose error messages and output.                                                                                                                                     |
 
 ## Contributing
 

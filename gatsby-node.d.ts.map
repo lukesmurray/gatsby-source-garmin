@@ -1,1 +1,1 @@
-{"version":3,"file":"gatsby-node.d.ts","sourceRoot":"","sources":["src/gatsby-node.tsx"],"names":[],"mappings":"AAEA,OAAO,EAAE,UAAU,EAAE,MAAM,QAAQ,CAAC;AAEpC,eAAO,MAAM,yBAAyB,EAAE,UAAU,CAAC,2BAA2B,CAE7E,CAAC;AAEF,eAAO,MAAM,WAAW,EAAE,UAAU,CAAC,aAAa,CAyCjD,CAAC"}
+{"version":3,"file":"gatsby-node.d.ts","sourceRoot":"","sources":["src/gatsby-node.tsx"],"names":[],"mappings":"AACA,OAAO,EAAE,UAAU,EAAkC,MAAM,QAAQ,CAAC;AAOpE,eAAO,MAAM,mBAAmB,EAAE,UAAU,CAAC,qBAAqB,CAUjE,CAAC;AAEF,eAAO,MAAM,WAAW,EAAE,UAAU,CAAC,aAAa,CAsDjD,CAAC"}

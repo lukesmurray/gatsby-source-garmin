@@ -30,6 +30,7 @@
     }
   },
   "dependencies": {
+    "date-fns": "^2.16.1",
     "garmin-connect": "^1.1.1",
     "react": "^17.0.1"
   }

@@ -1,50 +1,75 @@
-import fs from "fs/promises";
 import { GarminConnect } from "garmin-connect";
-import { GatsbyNode } from "gatsby";
+import { GatsbyNode, PluginOptions, SourceNodesArgs } from "gatsby";
+import { getActivities } from "./garmin/getActivities";
+import Endpoints from "./utils/Endpoints";
+import GarminPluginOptions, {
+  defaultGarminPluginOptions,
+} from "./utils/GarminPluginOptions";
 
-export const createSchemaCustomization: GatsbyNode["createSchemaCustomization"] = () => {
-  return Promise.resolve();
+export const pluginOptionsSchema: GatsbyNode["pluginOptionsSchema"] = ({
+  Joi,
+}) => {
+  return Joi.object({
+    email: Joi.string().required(),
+    password: Joi.string().required(),
+    startDate: Joi.number().required(),
+    endpoints: Joi.array().items(Joi.string().valid(...Endpoints.values)),
+    debug: Joi.boolean(),
+  });
 };
 
-export const createPages: GatsbyNode["createPages"] = async () => {
-  async function writeJson<T extends Object>(name: string, data: T) {
-    await fs.writeFile(`responses/${name}.json`, JSON.stringify(data, null, 2));
-  }
-
+export const sourceNodes: GatsbyNode["sourceNodes"] = async (
+  {
+    actions,
+    createNodeId,
+    createContentDigest,
+    reporter,
+    cache,
+  }: SourceNodesArgs,
+  pluginOptions: PluginOptions & GarminPluginOptions
+) => {
   const GCClient = new GarminConnect();
 
-  await GCClient.login();
+  pluginOptions = { ...defaultGarminPluginOptions, ...pluginOptions };
 
-  const userInfo = await GCClient.getUserInfo();
-  await writeJson("userInfo", userInfo);
+  try {
+    await GCClient.login(pluginOptions.email, pluginOptions.password);
 
-  const socialProfile = await GCClient.getSocialProfile();
-  await writeJson("socialProfile", socialProfile);
+    if (pluginOptions.endpoints!.indexOf("Activities") !== -1) {
+      const activities = await getActivities({
+        cache,
+        pluginOptions,
+        reporter,
+        GCClient,
+      });
 
-  const socialConnections = await GCClient.getSocialConnections();
-  await writeJson("socialConnections", socialConnections);
+      if (activities && activities.length > 0) {
+        activities.forEach((activity) => {
+          actions.createNode(
+            {
+              activity,
+              id: createNodeId(`GarminActivity${activity.id}`),
+              internal: {
+                type: "GarminActivity",
+                contentDigest: createContentDigest(activity),
+              },
+            },
+            {
+              name: "gatsby-source-garmin",
+            }
+          );
+        });
 
-  const deviceInfo = await GCClient.getDeviceInfo();
-  await writeJson("deviceInfo", deviceInfo);
-
-  const activities = await GCClient.getActivities(0, 10);
-  await writeJson("activities", activities);
-
-  const activity = await GCClient.getActivity(activities[0]);
-  await writeJson("activity", activity);
-
-  const newsFeed = await GCClient.getNewsFeed(0, 10);
-  await writeJson("newsFeed", newsFeed);
-
-  const steps = await GCClient.getSteps();
-  await writeJson("steps", steps);
-
-  const hr = await GCClient.getHeartRate();
-  await writeJson("heartRate", hr);
-
-  const sleep = await GCClient.getSleep();
-  await writeJson("sleep", sleep);
-
-  const sleepData = await GCClient.getSleepData();
-  await writeJson("sleepData", sleepData);
+        reporter.success(
+          `source-garmin: ${activities.length} activities fetched`
+        );
+      }
+    }
+  } catch (e) {
+    if (pluginOptions.debug) {
+      reporter.panic(`source-garmin: `, e);
+    } else {
+      reporter.panic(`source-garmin: ${e.message}`);
+    }
+  }
 };

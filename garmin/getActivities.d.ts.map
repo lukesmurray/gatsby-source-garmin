@@ -1,0 +1,1 @@
+{"version":3,"file":"getActivities.d.ts","sourceRoot":"","sources":["../src/garmin/getActivities.tsx"],"names":[],"mappings":"AACA,OAAO,EAAE,aAAa,EAAE,MAAM,gBAAgB,CAAC;AAC/C,OAAO,EAAE,WAAW,EAAE,aAAa,EAAE,QAAQ,EAAE,MAAM,QAAQ,CAAC;AAC9D,OAAO,mBAAmB,MAAM,8BAA8B,CAAC;AAG/D,eAAO,MAAM,aAAa;WAMjB,WAAW;mBACH,aAAa,GAAG,mBAAmB;cACxC,QAAQ;cACR,aAAa;MACrB,QAAQ,GAAG,EAAE,CAmFhB,CAAC"}
