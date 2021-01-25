@@ -55,36 +55,30 @@ module.exports = {
 | endpoints |  false   | `[ "Activities", "Steps", "HeartRate", "Sleep", "SleepData" ]` | string[] | The garmin endpoints to hit. See [Garmin Connect](https://github.com/Pythe1337N/garmin-connect) for more information about each endpoint. Defaults to all endpoints exposed by this plugin. |
 | debug     |  false   | false                                                          | boolean  | Whether to emit more verbose error messages and output.                                                                                                                                     |
 
-## Querying
+## Graphql
 
-### Activities
-
-The activities have the type `GarminActivity` and can be queried using `allGarminActivity` and `garminActivity`.
-The garmin data for each activity can be found in the `activity` property.
+The source plugin contributes the following types `GarminActivity`, `GarminSteps`, `GarminHeartRates`, and `GarminSleepData`.
+Each type has a data field containing the data from the garmin API or a date and the data from the garmin API.
 
 ```graphql
 query ExampleQuery {
-  allGarminActivity {
-    edges {
-      node {
-        id
-        activity {
-          activityType {
-            typeKey
-          }
-          distance
-          calories
-          duration
-          maxSpeed
-        }
-      }
-    }
+  garminSteps {
+    data
+  }
+  garminSleepData {
+    data
+  }
+  garminHeartRates {
+    data
+  }
+  garminActivity {
+    data
   }
 }
 ```
 
 ## Contributing
 
-All the code is in the `src` file.
-To create the plugin run `yarn build`.
-Then check the generated `js` files to make sure they look alright.
+The source code is in the `src` folder.
+An example of the plugin is in the `example` folder and can be run with `gatsby develop` from within the example folder.
+After changing the source code transpile the js with `yarn build`.
