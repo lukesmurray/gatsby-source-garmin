@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/lukesmurray/gatsby-source-garmin/compare/v0.0.1...v0.0.2) (2021-01-26)
+
+
+### Bug Fixes
+
+* **graphql:** add npm ignore so example file isn't downloaded on install ([eb7d1f0](https://github.com/lukesmurray/gatsby-source-garmin/commit/eb7d1f0ad8bdf342c82c897adc203434c0a137e1))
+
 ### 0.0.1 (2021-01-25)
 
 
