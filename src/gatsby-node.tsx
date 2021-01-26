@@ -157,7 +157,7 @@ export const sourceNodes: GatsbyNode["sourceNodes"] = async (
         });
 
         reporter.success(
-          `source-garmin: ${sleepData.length} days of heart rates fetched`
+          `source-garmin: ${sleepData.length} days of sleep data fetched`
         );
       }
     }

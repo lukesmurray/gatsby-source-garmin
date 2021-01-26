@@ -47,8 +47,7 @@ export const getSleepData = async ({
 
     if (pluginOptions.debug) {
       reporter.info(
-        "source-garmin: Fetching heart rates since " +
-          startDate.toLocaleString()
+        "source-garmin: Fetching sleep data since " + startDate.toLocaleString()
       );
     }
 
@@ -67,7 +66,7 @@ export const getSleepData = async ({
 
     // while current is greater than or equal to start date
     while (compareAsc(startDate, current) !== 1) {
-      let loadedHeartRate = await GCClient.getSleepData(current);
+      let loadedSleep = await GCClient.getSleepData(current);
 
       if (pluginOptions.debug) {
         reporter.info(
@@ -77,7 +76,7 @@ export const getSleepData = async ({
 
       let storedSleep = {
         date: current,
-        data: loadedHeartRate,
+        data: loadedSleep,
       };
 
       await cache.set(formatSleepId(current), {
