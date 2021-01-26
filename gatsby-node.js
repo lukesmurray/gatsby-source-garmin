@@ -185,7 +185,7 @@ var sourceNodes = function (_a, pluginOptions) {
                                 name: "gatsby-source-garmin",
                             });
                         });
-                        reporter.success("source-garmin: " + sleepData.length + " days of heart rates fetched");
+                        reporter.success("source-garmin: " + sleepData.length + " days of sleep data fetched");
                     }
                     _b.label = 10;
                 case 10: return [3 /*break*/, 12];

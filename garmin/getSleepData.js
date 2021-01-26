@@ -57,7 +57,7 @@ var format_1 = __importDefault(require("date-fns/format"));
 var getSleepData = function (_a) {
     var cache = _a.cache, pluginOptions = _a.pluginOptions, reporter = _a.reporter, GCClient = _a.GCClient;
     return __awaiter(void 0, void 0, void 0, function () {
-        var sleepData_1, cacheSleepDataIds, startDate, lastFetch, lastFetchDate, end, current, loadedHeartRate, storedSleep, e_1;
+        var sleepData_1, cacheSleepDataIds, startDate, lastFetch, lastFetchDate, end, current, loadedSleep, storedSleep, e_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -96,8 +96,7 @@ var getSleepData = function (_a) {
                         }
                     }
                     if (pluginOptions.debug) {
-                        reporter.info("source-garmin: Fetching heart rates since " +
-                            startDate.toLocaleString());
+                        reporter.info("source-garmin: Fetching sleep data since " + startDate.toLocaleString());
                     }
                     end = addDays_1.default(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()), -1);
                     current = new Date(end.getTime());
@@ -106,13 +105,13 @@ var getSleepData = function (_a) {
                     if (!(compareAsc_1.default(startDate, current) !== 1)) return [3 /*break*/, 6];
                     return [4 /*yield*/, GCClient.getSleepData(current)];
                 case 4:
-                    loadedHeartRate = _b.sent();
+                    loadedSleep = _b.sent();
                     if (pluginOptions.debug) {
                         reporter.info("source-garmin: Loaded sleep data for " + formatSleepDate(current));
                     }
                     storedSleep = {
                         date: current,
-                        data: loadedHeartRate,
+                        data: loadedSleep,
                     };
                     return [4 /*yield*/, cache.set(formatSleepId(current), __assign(__assign({}, storedSleep), { date: storedSleep.date.getTime() }))];
                 case 5:
