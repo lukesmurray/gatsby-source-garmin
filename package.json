@@ -10,7 +10,10 @@
   },
   "keywords": [
     "gatsby",
-    "garmin"
+    "gatsby-plugin",
+    "gatsby-source-plugin",
+    "garmin",
+    "garmin-connect"
   ],
   "author": "Luke Murray",
   "license": "MIT",
